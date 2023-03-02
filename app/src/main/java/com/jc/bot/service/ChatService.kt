@@ -11,7 +11,6 @@ class ChatService : Service()   {
         super.onCreate()
     }
 
-
     override fun onBind(intent: Intent?): IBinder? {
         return null
     }
