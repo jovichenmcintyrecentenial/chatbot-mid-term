@@ -12,7 +12,7 @@ import com.jc.bot.data.SharedPreferenceStore.USERNAME
 import com.jc.bot.data.SharedPreferenceStore.loadData
 import com.jc.bot.data.SharedPreferenceStore.saveData
 import com.jc.bot.databinding.ActivityMainBinding
-import com.jc.exceptions.UserInputException
+import com.jc.bot.exceptions.UserInputException
 
 @Suppress("DEPRECATION")
 class MainActivity : AppCompatActivity() {

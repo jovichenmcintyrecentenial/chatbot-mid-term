@@ -5,10 +5,20 @@
     android:layout_height="match_parent"
     android:background="@drawable/chat_background"
     tools:context=".ChatActivity">
+
+
+
 <LinearLayout
+    android:id="@+id/chat_bot"
     android:layout_width="match_parent"
     android:gravity="bottom"
+    android:orientation="vertical"
     android:layout_height="match_parent">
+    <androidx.recyclerview.widget.RecyclerView
+        android:layout_weight="1"
+        android:id="@+id/recyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"

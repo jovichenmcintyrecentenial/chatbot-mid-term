@@ -1,3 +1,3 @@
-package com.jc.exceptions
+package com.jc.bot.exceptions
 
 class UserInputException(message: String) : Exception(message)
