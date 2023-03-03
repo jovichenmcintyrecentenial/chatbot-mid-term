@@ -5,12 +5,18 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.Bundle
+import android.provider.SyncStateContract.Constants
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.gson.Gson
+import com.jc.bot.data.SharedPreferenceStore
+import com.jc.bot.data.SharedPreferenceStore.USERNAME
+import com.jc.bot.data.SharedPreferenceStore.loadData
 import com.jc.bot.databinding.ActivityChatBinding
 import com.jc.bot.models.ChatMessage
+import com.jc.bot.models.MyConstants
 import com.jc.bot.service.ChatService
 import com.jc.bot.ui.adapter.ChatAdapter
 
@@ -49,15 +55,12 @@ class ChatActivity : AppCompatActivity() {
 
 
         // Create the BroadcastReceiver
-
-        // Create the BroadcastReceiver
         receiver = object : BroadcastReceiver() {
             override fun onReceive(context: Context, intent: Intent) {
                 val message = intent.getStringExtra("message")
+                val chatMessage = Gson().fromJson(message,ChatMessage::class.java)
                 listOfMessage.add(
-                    ChatMessage("Bot",
-                        message!!,
-                        R.drawable.main_button_shape)
+                    chatMessage
                 )
                 adapter.notifyItemInserted(listOfMessage.count()-1)
             }
@@ -70,7 +73,13 @@ class ChatActivity : AppCompatActivity() {
     }
 
     fun generateMessage(view: View) {
-        startService(ChatService.CMD_MSG, ChatService.CMD_GENERATE_MESSAGE)
+
+        var bundle = Bundle()
+        bundle.putString(MyConstants.CHAT_NAME,"Bot")
+        bundle.putInt(MyConstants.CHAT_AVATAR,R.drawable.chat_bot_avatar)
+        bundle.putString(USERNAME,loadData(this,USERNAME,""))
+
+        startService(ChatService.CMD_MSG, ChatService.CMD_GENERATE_MESSAGE,bundle)
     }
 
     fun stopService(view: View) {

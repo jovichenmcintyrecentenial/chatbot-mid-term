@@ -5,6 +5,11 @@ import android.app.Service
 import android.content.Intent
 import android.os.Bundle
 import android.os.IBinder
+import com.google.gson.Gson
+import com.jc.bot.R
+import com.jc.bot.models.ChatMessage
+import com.jc.bot.models.MyConstants
+import com.jc.bot.models.MyConstants.ID_LAST_DIGIT
 import com.jc.bot.notification.Notifications
 
 class ChatService : Service()   {
@@ -46,10 +51,10 @@ class ChatService : Service()   {
 
         when (data.getString(CMD_MSG)) {
             CMD_GENERATE_MESSAGE -> {
-                generateMessages()
+                generateMessages(data)
             }
             CMD_STOP_SERVICE -> {
-                stopMessageService()
+                stopMessageService(data)
             }
         }
     }
@@ -58,11 +63,15 @@ class ChatService : Service()   {
         super.onDestroy()
     }
 
-    private fun stopMessageService(){
+    private fun stopMessageService(data: Bundle?){
 
-        val studentIdLast2Digits = "59"
+        if(data == null) return
 
-        sendMessage("ChatBot Stopped: $studentIdLast2Digits")
+        val studentIdLast2Digits = ID_LAST_DIGIT
+        val avatar = data.getInt(MyConstants.CHAT_AVATAR)
+        val name = data.getString(MyConstants.CHAT_NAME,"")
+
+        sendMessage(name,"ChatBot Stopped: $studentIdLast2Digits",avatar)
 
         notificationDecorator.showNotification(
             "Shutdown",
@@ -70,8 +79,13 @@ class ChatService : Service()   {
         )
 
     }
-    private fun generateMessages(){
-        var user = "Jovi"
+    private fun generateMessages(data: Bundle?){
+
+        if(data == null) return
+
+        val user = data.getString(MyConstants.USER_NAME,"")
+        val avatar = data.getInt(MyConstants.CHAT_AVATAR)
+        val name = data.getString(MyConstants.CHAT_NAME,"")
 
         //generate message in sequence with a 1 second delay between each
         Thread {
@@ -80,28 +94,29 @@ class ChatService : Service()   {
                     "New message",
                     "Hello $user",
                 )
-                sendMessage("Hello $user")
+                sendMessage(name,"Hello $user",avatar)
                 Thread.sleep(1000)
                 notificationDecorator.showNotification(
                     "New message",
                     "How are you? ",
                 )
-                sendMessage("How are you? ")
+                sendMessage(name,"How are you? ",avatar)
                 Thread.sleep(1000)
                 notificationDecorator.showNotification(
                     "New message",
                     "Good Bye $user!",
                 )
-                sendMessage("Good Bye $user!")
+                sendMessage(name,"Good Bye $user!",avatar)
             } catch (e: InterruptedException) {
                 e.printStackTrace()
             }
         }.start()
     }
 
-    fun sendMessage(message: String?) {
-        val intent = Intent(ChatService.BROADCAST_ID)
-        intent.putExtra("message", message)
+    private fun sendMessage(name:String = "", msg: String, img:Int = 0) {
+        val intent = Intent(BROADCAST_ID)
+        var message = ChatMessage(name,msg,img)
+        intent.putExtra("message", Gson().toJson( message))
         sendBroadcast(intent)
     }
 
