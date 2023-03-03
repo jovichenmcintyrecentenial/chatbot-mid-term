@@ -74,8 +74,9 @@ class ChatService : Service()   {
         sendMessage(name,"ChatBot Stopped: $studentIdLast2Digits",avatar)
 
         notificationDecorator.showNotification(
-            "Shutdown",
-            "ChatBot Stopped: $studentIdLast2Digits"
+            "New Message from $name",
+            "ChatBot Stopped: $studentIdLast2Digits",
+            data
         )
 
     }
@@ -91,20 +92,22 @@ class ChatService : Service()   {
         Thread {
             try {
                 notificationDecorator.showNotification(
-                    "New message",
-                    "Hello $user",
+                    "New Message from $name",
+                    "Hello $user",data
                 )
                 sendMessage(name,"Hello $user",avatar)
                 Thread.sleep(1000)
                 notificationDecorator.showNotification(
-                    "New message",
+                    "New Message from $name",
                     "How are you? ",
+                    data
                 )
                 sendMessage(name,"How are you? ",avatar)
                 Thread.sleep(1000)
                 notificationDecorator.showNotification(
-                    "New message",
+                    "New Message from $name",
                     "Good Bye $user!",
+                    data
                 )
                 sendMessage(name,"Good Bye $user!",avatar)
             } catch (e: InterruptedException) {

@@ -1,15 +1,21 @@
 package com.jc.bot.notification
 
+import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.os.Build
+import android.os.Bundle
+import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.jc.bot.ChatActivity
 import com.jc.bot.R
+import com.jc.bot.models.MyConstants
+import java.text.SimpleDateFormat
+import java.util.*
 
 class Notifications(private val context: Context) {
     private val CHANNEL_ID = "my_channel"
@@ -19,7 +25,11 @@ class Notifications(private val context: Context) {
         createNotificationChannel()
     }
 
-    fun showNotification(title: String, message: String) {
+    fun showNotification(title: String, message: String, data:Bundle) {
+
+
+        val avatar = data.getInt(MyConstants.CHAT_AVATAR)
+
         NOTIFICATION_ID++
 
         val intent = Intent(context, ChatActivity::class.java)
@@ -30,30 +40,44 @@ class Notifications(private val context: Context) {
             PendingIntent.FLAG_MUTABLE
         )
 
+        val dateFormat = SimpleDateFormat("MMM d, yyyy @ hh:mm a", Locale.getDefault())
+
+
+        val remoteViews = RemoteViews(context.packageName, R.layout.my_custom_layout)
+
+        remoteViews.setTextViewText(R.id.textView1, title)
+        remoteViews.setTextViewText(R.id.textView2, message)
+        remoteViews.setImageViewResource(R.id.avatar, avatar)
+        remoteViews.setTextViewText(R.id.date_text, dateFormat.format(System.currentTimeMillis()))
+//      remoteViews.(R.id.avatar, message)
+
         val builder = NotificationCompat.Builder(context, CHANNEL_ID)
-            .setSmallIcon(R.drawable.chat_bot_avatar)
+            .setSmallIcon(avatar)
             .setContentTitle(title)
             .setContentText(message)
             .setContentIntent(pendingIntent)
-            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setAutoCancel(true)
+            .setCustomContentView(remoteViews)
 
         val notificationManager = NotificationManagerCompat.from(context)
         notificationManager.notify(NOTIFICATION_ID, builder.build())
     }
 
     private fun createNotificationChannel() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val name = "My Channel"
-            val descriptionText = "My Channel Description"
-            val importance = NotificationManager.IMPORTANCE_DEFAULT
-            val channel = NotificationChannel(CHANNEL_ID, name, importance).apply {
-                description = descriptionText
-            }
-
-            val notificationManager: NotificationManager =
-                context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-            notificationManager.createNotificationChannel(channel)
+        val notificationBuilder = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            Notification.Builder(context, CHANNEL_ID)
+        } else {
+            Notification.Builder(context)
         }
+
+        notificationBuilder
+            .setSmallIcon(R.mipmap.ic_launcher)
+            .setContentTitle("My notification")
+            .setContentText("Hello world!")
+            .setPriority(Notification.PRIORITY_DEFAULT)
+
+        val notificationManager =
+            context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.notify(0, notificationBuilder.build())
     }
 }

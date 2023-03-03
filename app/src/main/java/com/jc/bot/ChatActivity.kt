@@ -5,13 +5,11 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.Bundle
-import android.provider.SyncStateContract.Constants
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
-import com.jc.bot.data.SharedPreferenceStore
 import com.jc.bot.data.SharedPreferenceStore.USERNAME
 import com.jc.bot.data.SharedPreferenceStore.loadData
 import com.jc.bot.databinding.ActivityChatBinding
