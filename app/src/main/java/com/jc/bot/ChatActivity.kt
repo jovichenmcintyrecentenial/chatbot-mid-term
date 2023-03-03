@@ -42,8 +42,9 @@ class ChatActivity : AppCompatActivity() {
         // size which may indicate that the keybord is visible
         rootView.viewTreeObserver.addOnGlobalLayoutListener {
 
-
-            recyclerView.smoothScrollToPosition(adapter.itemCount - 1)
+            if(adapter.itemCount > 3) {
+                recyclerView.smoothScrollToPosition(adapter.itemCount - 1)
+            }
         }
 
 
