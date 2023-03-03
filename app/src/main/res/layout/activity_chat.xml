@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/root_view"
     android:background="@drawable/chat_background"
     tools:context=".ChatActivity">
 
@@ -25,8 +26,8 @@
         android:background="@drawable/chat_box_container"
         android:layout_height="wrap_content">
         <TextView
-            android:layout_marginTop="10dp"
-            android:paddingHorizontal="10dp"
+            android:layout_marginTop="@dimen/app_margin_2"
+            android:paddingHorizontal="@dimen/app_margin_2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/commands"
@@ -40,11 +41,13 @@
                 <com.google.android.material.chip.Chip
                     android:id="@+id/stop_service"
                     android:text="@string/stop_service"
-                    android:layout_marginRight="10dp"
+                    android:onClick="stopService"
+                    android:layout_marginEnd="@dimen/app_margin_2"
                     style="@style/chip_style" />
                 <com.google.android.material.chip.Chip
                     android:id="@+id/generate_message"
                     android:text="@string/generate_message"
+                    android:onClick="generateMessage"
                     style="@style/chip_style" />
             </LinearLayout>
 

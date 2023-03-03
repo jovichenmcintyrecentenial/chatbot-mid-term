@@ -12,8 +12,6 @@ class ChatAdapter(private val dataList: List<ChatMessage>) : RecyclerView.Adapte
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         var message: TextView = itemView.findViewById(R.id.message)
-
-
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {

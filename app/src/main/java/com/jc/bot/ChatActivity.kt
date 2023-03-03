@@ -1,17 +1,25 @@
 package com.jc.bot
 
-import androidx.appcompat.app.AppCompatActivity
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.os.Bundle
+import android.view.View
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.jc.bot.databinding.ActivityChatBinding
 import com.jc.bot.models.ChatMessage
+import com.jc.bot.service.ChatService
 import com.jc.bot.ui.adapter.ChatAdapter
 
 class ChatActivity : AppCompatActivity() {
     private lateinit var binding: ActivityChatBinding
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter:ChatAdapter
+    private lateinit var receiver: BroadcastReceiver
+    private  var listOfMessage:MutableList<ChatMessage> = ArrayList<ChatMessage>()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -23,32 +31,64 @@ class ChatActivity : AppCompatActivity() {
         recyclerView = binding.recyclerView
         recyclerView.layoutManager = LinearLayoutManager(this)
 
-        val listOfMessage:MutableList<ChatMessage> = ArrayList<ChatMessage>()
-
-        listOfMessage.add(
-            ChatMessage("Jovi",
-                "Hello World",
-                R.drawable.main_button_shape)
-        )
-        listOfMessage.add(
-            ChatMessage("Jovi",
-                "Hello World",
-                R.drawable.main_button_shape)
-        )
-        listOfMessage.add(
-            ChatMessage("Jovi",
-                "Hello World",
-                R.drawable.main_button_shape)
-        )
-        listOfMessage.add(
-            ChatMessage("Jovi",
-                "Cleared Reference was only reachable from finalizer (only reported once)",
-                R.drawable.main_button_shape)
-        )
 
         adapter = ChatAdapter(listOfMessage)
         recyclerView.adapter = adapter
 
 
+        val rootView = binding.rootView
+
+        // Scroll the RecyclerView to the bottom if detect change in layout
+        // size which may indicate that the keybord is visible
+        rootView.viewTreeObserver.addOnGlobalLayoutListener {
+
+
+            recyclerView.smoothScrollToPosition(adapter.itemCount - 1)
+        }
+
+
+        // Create the BroadcastReceiver
+
+        // Create the BroadcastReceiver
+        receiver = object : BroadcastReceiver() {
+            override fun onReceive(context: Context, intent: Intent) {
+                val message = intent.getStringExtra("message")
+                listOfMessage.add(
+                    ChatMessage("Bot",
+                        message!!,
+                        R.drawable.main_button_shape)
+                )
+                adapter.notifyItemInserted(listOfMessage.count()-1)
+            }
+        }
+
+        val filter = IntentFilter()
+        filter.addAction(ChatService.BROADCAST_ID)
+        registerReceiver(receiver, filter)
+
     }
+
+    fun generateMessage(view: View) {
+        startService(ChatService.CMD_MSG, ChatService.CMD_GENERATE_MESSAGE)
+    }
+
+    fun stopService(view: View) {
+        startService(ChatService.CMD_MSG, ChatService.CMD_STOP_SERVICE)
+    }
+
+    private fun startService(cmdMsg: String, cmdGenerateMessage: String,data:Bundle = Bundle()) {
+        data.putString(cmdMsg, cmdGenerateMessage)
+        val intent = Intent(applicationContext, ChatService::class.java)
+        intent.putExtras(data)
+        startService(intent)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        unregisterReceiver(receiver)
+    }
+
+
+
+
 }
