@@ -1,12 +1,16 @@
 package com.jc.bot
 
+import android.Manifest
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.View
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
@@ -69,6 +73,32 @@ class ChatActivity : AppCompatActivity() {
         filter.addAction(ChatService.BROADCAST_ID)
         registerReceiver(receiver, filter)
 
+
+        //request notification permission
+
+        val requestPermissionLauncher =
+            registerForActivityResult(
+                ActivityResultContracts.RequestPermission()
+            ) { isGranted: Boolean ->
+
+            }
+
+        when {
+            ContextCompat.checkSelfPermission(
+                applicationContext,
+                Manifest.permission.POST_NOTIFICATIONS
+            ) == PackageManager.PERMISSION_GRANTED -> {
+                // You can use the API that requires the permission.
+            }
+            shouldShowRequestPermissionRationale("Require permission inorder to get notificaion from chat bot") -> {
+
+        }
+            else -> {
+
+                requestPermissionLauncher.launch(
+                    Manifest.permission.POST_NOTIFICATIONS)
+            }
+        }
     }
 
     fun generateMessage(view: View) {
