@@ -25,9 +25,9 @@ class ChatActivity : AppCompatActivity() {
     private lateinit var receiver: BroadcastReceiver
     private  var listOfMessage:MutableList<ChatMessage> = ArrayList<ChatMessage>()
 
+    private lateinit var myServiceIntent:Intent
 
     override fun onCreate(savedInstanceState: Bundle?) {
-
         super.onCreate(savedInstanceState)
         binding = ActivityChatBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -35,6 +35,7 @@ class ChatActivity : AppCompatActivity() {
         recyclerView = binding.recyclerView
         recyclerView.layoutManager = LinearLayoutManager(this)
 
+        myServiceIntent = Intent(applicationContext, ChatService::class.java)
 
         adapter = ChatAdapter(listOfMessage)
         recyclerView.adapter = adapter
@@ -89,13 +90,13 @@ class ChatActivity : AppCompatActivity() {
 
     private fun startService(cmdMsg: String, cmdGenerateMessage: String,data:Bundle = Bundle()) {
         data.putString(cmdMsg, cmdGenerateMessage)
-        val intent = Intent(applicationContext, ChatService::class.java)
-        intent.putExtras(data)
-        startService(intent)
+        myServiceIntent.putExtras(data)
+        startService(myServiceIntent)
     }
 
     override fun onDestroy() {
         super.onDestroy()
+        stopService(myServiceIntent)
         unregisterReceiver(receiver)
     }
 

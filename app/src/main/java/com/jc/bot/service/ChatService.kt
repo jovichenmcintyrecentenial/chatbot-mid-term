@@ -6,7 +6,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.IBinder
 import com.google.gson.Gson
-import com.jc.bot.R
 import com.jc.bot.models.ChatMessage
 import com.jc.bot.models.MyConstants
 import com.jc.bot.models.MyConstants.ID_LAST_DIGIT
@@ -78,6 +77,8 @@ class ChatService : Service()   {
             "ChatBot Stopped: $studentIdLast2Digits",
             data
         )
+
+        stopSelf()
 
     }
     private fun generateMessages(data: Bundle?){
