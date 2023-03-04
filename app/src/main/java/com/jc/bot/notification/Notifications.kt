@@ -22,7 +22,6 @@ class Notifications(private val context: Context) {
     private var NOTIFICATION_ID = 1
 
     init {
-        createNotificationChannel()
     }
 
     fun showNotification(title: String, message: String, data:Bundle) {
@@ -63,21 +62,4 @@ class Notifications(private val context: Context) {
         notificationManager.notify(NOTIFICATION_ID, builder.build())
     }
 
-    private fun createNotificationChannel() {
-        val notificationBuilder = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            Notification.Builder(context, CHANNEL_ID)
-        } else {
-            Notification.Builder(context)
-        }
-
-        notificationBuilder
-            .setSmallIcon(R.mipmap.ic_launcher)
-            .setContentTitle("My notification")
-            .setContentText("Hello world!")
-            .setPriority(Notification.PRIORITY_DEFAULT)
-
-        val notificationManager =
-            context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        notificationManager.notify(0, notificationBuilder.build())
-    }
 }

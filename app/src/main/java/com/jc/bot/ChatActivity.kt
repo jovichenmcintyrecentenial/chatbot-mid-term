@@ -81,7 +81,10 @@ class ChatActivity : AppCompatActivity() {
     }
 
     fun stopService(view: View) {
-        startService(ChatService.CMD_MSG, ChatService.CMD_STOP_SERVICE)
+        var bundle = Bundle()
+        bundle.putString(MyConstants.CHAT_NAME,"Bot")
+        bundle.putInt(MyConstants.CHAT_AVATAR,R.drawable.chat_bot_avatar)
+        startService(ChatService.CMD_MSG, ChatService.CMD_STOP_SERVICE,bundle)
     }
 
     private fun startService(cmdMsg: String, cmdGenerateMessage: String,data:Bundle = Bundle()) {
