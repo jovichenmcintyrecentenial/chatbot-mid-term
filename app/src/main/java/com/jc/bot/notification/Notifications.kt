@@ -8,9 +8,8 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.view.ViewGroup
 import android.widget.RemoteViews
-import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationManagerCompat
 import com.jc.bot.ChatActivity
 import com.jc.bot.R
 import com.jc.bot.models.MyConstants
@@ -18,7 +17,8 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 class Notifications(private val context: Context) {
-    private val CHANNEL_ID = "my_channel"
+    private val CHANNEL_ID = "my_channel_id"
+    private val CHANNEL_NAME = "My Chat Bot"
     private var NOTIFICATION_ID = 1
 
     init {
@@ -48,18 +48,34 @@ class Notifications(private val context: Context) {
         remoteViews.setTextViewText(R.id.textView2, message)
         remoteViews.setImageViewResource(R.id.avatar, avatar)
         remoteViews.setTextViewText(R.id.date_text, dateFormat.format(System.currentTimeMillis()))
-//      remoteViews.(R.id.avatar, message)
 
-        val builder = NotificationCompat.Builder(context, CHANNEL_ID)
-            .setSmallIcon(avatar)
+        var notificationManager:NotificationManager? = null
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val importance = NotificationManager.IMPORTANCE_HIGH // Importance level for the notification channel
+            val channel = NotificationChannel(CHANNEL_ID, CHANNEL_NAME, importance)
+            notificationManager =  context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.createNotificationChannel(channel)
+        }
+
+        val notificationBuilder = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            Notification.Builder(context, CHANNEL_ID)
+        } else {
+            Notification.Builder(context)
+        }
+
+
+        notificationBuilder.setSmallIcon(avatar)
             .setContentTitle(title)
             .setContentText(message)
             .setContentIntent(pendingIntent)
             .setAutoCancel(true)
             .setCustomContentView(remoteViews)
+            .setCustomBigContentView(remoteViews)
+            .setPriority(Notification.PRIORITY_DEFAULT)
 
-        val notificationManager = NotificationManagerCompat.from(context)
-        notificationManager.notify(NOTIFICATION_ID, builder.build())
+        notificationManager = notificationManager ?: context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.notify(NOTIFICATION_ID, notificationBuilder.build())
     }
 
 }
